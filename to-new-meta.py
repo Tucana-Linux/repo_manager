@@ -23,7 +23,7 @@ for pkg, version in versions.items():
     last_update : int = int(os.path.getmtime(f"packages/{pkg}.tar.xz"))
     download_size : int = os.path.getsize(f"packages/{pkg}.tar.xz") // 1024
     install_size : int = get_uncompressed_size(f"packages/{pkg}.tar.xz")
-    with open(f"depends/depend-{pkg}", "r") as file:
+    with open(f"depend/depend-{pkg}", "r") as file:
         depends_string : str = file.readline().strip()
         depends_list : list[str] = depends_string.split() if depends_string else []
         
