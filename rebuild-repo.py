@@ -1,6 +1,7 @@
 import os
 from typing import Any
 import yaml
+import time
 import tarfile
 
 class RepoManager:
@@ -79,6 +80,9 @@ class RepoManager:
     def write_repo(self, packages : dict[str, dict[str, Any]]):
         with open("available-packages/packages.yaml", "w") as packages_yaml:
             yaml.safe_dump(packages, packages_yaml)
+        with open('time', 'w') as f:
+            f.write(str(int(time.time())))
+            
     
     
     
@@ -100,6 +104,7 @@ for package in packages_with_updates:
     packages[package] = package_dict
 
 repo.write_repo(packages)
+
  
     
 
