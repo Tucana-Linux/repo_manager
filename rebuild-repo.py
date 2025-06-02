@@ -89,9 +89,12 @@ class RepoManager:
     
 repo = RepoManager(os.getcwd())
 packages :  dict[str, dict[str, Any]] = repo.get_current_state()
+print("Getting Updates")
 packages_with_updates : list[str] = repo.get_updates()
+print(f"Packages with updates {packages_with_updates}")
 
 for package in packages_with_updates:
+    print(f"Working on {package}")
     package_dict = {}
     current_version : str = ""
     if package in packages:
