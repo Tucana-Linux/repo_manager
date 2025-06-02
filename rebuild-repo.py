@@ -39,8 +39,8 @@ class RepoManager:
         if depends_str is None:
             raise ValueError("No 'depends' file found in the archive.")
         
-        depends_arr : list[str] = depends_str.split()
-        return depends_arr
+        return depends_str.split()
+        
         
         
     def extract_and_process_version(self, package: str, current_version: str) -> str:
