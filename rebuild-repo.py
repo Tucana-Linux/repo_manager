@@ -114,7 +114,7 @@ for package in packages_with_updates:
         current_version = packages[package]["version"]
     package_dict["version"] = repo.extract_and_process_version(package, current_version)
     package_dict["depends"] = repo.extract_depends(package)
-    package_dict["make-depends"] = repo.extract_depends(package)
+    package_dict["make_depends"] = repo.extract_make_depends(package)
     package_dict["install_size"] = repo.get_install_size(package)
     package_dict["download_size"] = repo.get_download_size(package)
     package_dict["last_update"] = repo.get_last_update(package)
