@@ -40,7 +40,19 @@ class RepoManager:
             raise ValueError("No 'depends' file found in the archive.")
         
         return depends_str.split()
+
+    def extract_make_depends(self, package: str) -> list[str]:
+        depends_str : str = ""
         
+        with tarfile.open(f"packages/{package}.tar.xz", "r:xz") as tar:
+            for member in tar.getmembers():
+                if os.path.basename(member.name) == "make-depends":
+                    f = tar.extractfile(member)
+                    if f:
+                        depends_str : str = f.read().decode().strip()
+                        break
+
+        return depends_str.split()
         
         
     def extract_and_process_version(self, package: str, current_version: str) -> str:
@@ -102,6 +114,7 @@ for package in packages_with_updates:
         current_version = packages[package]["version"]
     package_dict["version"] = repo.extract_and_process_version(package, current_version)
     package_dict["depends"] = repo.extract_depends(package)
+    package_dict["make-depends"] = repo.extract_depends(package)
     package_dict["install_size"] = repo.get_install_size(package)
     package_dict["download_size"] = repo.get_download_size(package)
     package_dict["last_update"] = repo.get_last_update(package)
