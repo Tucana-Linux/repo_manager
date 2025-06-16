@@ -130,6 +130,7 @@ for package in packages_with_updates:
     package_dict["download_size"] = repo.get_download_size(package)
     package_dict["last_update"] = repo.get_last_update(package)
     packages[package] = package_dict
+
 print("Validating Repo State...")
 if validate_state(packages):
     print("Writing Repo...")
