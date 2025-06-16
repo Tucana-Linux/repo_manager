@@ -26,16 +26,15 @@ class RepoManager:
         return needs_update
     
     def extract_depends(self, package: str) -> list[str]:
-        depends_str : str = None
+        depends_str : str | None = None
         
         with tarfile.open(f"packages/{package}.tar.xz", "r:xz") as tar:
             for member in tar.getmembers():
                 if os.path.basename(member.name) == "depends":
                     f = tar.extractfile(member)
                     if f:
-                        depends_str : str = f.read().decode().strip()
+                        depends_str = f.read().decode().strip()
                         break
-
         if depends_str is None:
             raise ValueError("No 'depends' file found in the archive.")
         
@@ -56,7 +55,7 @@ class RepoManager:
         
         
     def extract_and_process_version(self, package: str, current_version: str) -> str:
-        extracted_version : str = None
+        extracted_version : str | None = None
         # Extract version file
         with tarfile.open(f"packages/{package}.tar.xz", "r:xz") as tar:
             for member in tar.getmembers():
@@ -96,13 +95,25 @@ class RepoManager:
             yaml.safe_dump(packages, packages_yaml)
         with open('time', 'w') as f:
             f.write(str(int(time.time())))
-            
-    
-    
-    
+
+def find_missing_depends(package: dict[str, Any], param : str, current_state : dict[str, dict[str, Any]]) -> set[str]:
+    missing_dependencies : set[str] = set()
+    for depend in package[param]:
+        if depend not in current_state.keys():
+            missing_dependencies.add(depend)
+    return missing_dependencies
+
+def validate_state(state: dict[str, dict[str, Any]]) -> bool:
+    for package_name, package in state.items():
+        missing_dependencies : set[str] =  find_missing_depends(package, "depends", state)
+        missing_make_dependencies : set[str] =  find_missing_depends(package, "make_depends",  state)
+        if missing_dependencies or missing_make_dependencies:
+            print(f"ERROR Repo State validation failed, {package_name} requires {list(missing_dependencies)} {list(missing_make_dependencies)} which could not be found")
+            return False
+    return True
+
 repo = RepoManager(os.getcwd())
 packages :  dict[str, dict[str, Any]] = repo.get_current_state()
-print("Getting Updates")
 packages_with_updates : list[str] = repo.get_updates()
 print(f"Packages with updates {packages_with_updates}")
 
@@ -118,10 +129,10 @@ for package in packages_with_updates:
     package_dict["install_size"] = repo.get_install_size(package)
     package_dict["download_size"] = repo.get_download_size(package)
     package_dict["last_update"] = repo.get_last_update(package)
-    
     packages[package] = package_dict
 
-repo.write_repo(packages)
+if validate_state(packages):
+    repo.write_repo(packages)
 
  
     
