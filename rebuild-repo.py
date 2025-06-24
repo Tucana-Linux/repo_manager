@@ -90,6 +90,29 @@ class RepoManager:
     def get_last_update(self, package: str) -> int:
         return int(os.path.getmtime(f"{self.repo_path}/packages/{package}.tar.xz"))
     
+    def generate_file_list(self, package: str) -> list[str]:
+        """
+        Returns a list of all file paths in the tarball for the given package.
+        """
+
+        file_list : list[str] = []
+        with tarfile.open(f"packages/{package}.tar.xz", 'r:xz') as tar:
+            for member in tar.getmembers():
+                if member.isfile():
+                    file_list.append(member.name)
+        return file_list
+
+    def write_file_list(self, package: str) -> None:
+        """
+        Writes the list of file paths from the tarball to file-lists/<package>.
+        """
+        file_list = self.generate_file_list(package)
+        os.makedirs("file-lists", exist_ok=True)
+        with open(f"file-lists/{package}", "w") as f:
+            for file_path in file_list:
+                f.write(f"{file_path}\n")
+
+    
     def write_repo(self, packages : dict[str, dict[str, Any]]):
         with open("available-packages/packages.yaml", "w") as packages_yaml:
             yaml.safe_dump(packages, packages_yaml)
@@ -130,6 +153,7 @@ for package in packages_with_updates:
     package_dict["download_size"] = repo.get_download_size(package)
     package_dict["last_update"] = repo.get_last_update(package)
     packages[package] = package_dict
+    repo.write_file_list(package)
 
 print("Validating Repo State...")
 if validate_state(packages):
