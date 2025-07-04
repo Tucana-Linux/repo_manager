@@ -45,4 +45,3 @@ def main() -> None:
         repo.write_repo(packages)
 
  
-main()
