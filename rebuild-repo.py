@@ -26,19 +26,18 @@ class RepoManager:
         return needs_update
     
     def extract_depends(self, package: str) -> list[str]:
-        depends_str : str | None = None
         
+        depends_str : str = ""
         with tarfile.open(f"packages/{package}.tar.xz", "r:xz") as tar:
             for member in tar.getmembers():
                 if os.path.basename(member.name) == "depends":
                     f = tar.extractfile(member)
                     if f:
                         depends_str = f.read().decode().strip()
-                        break
-        if depends_str is None:
+                        return depends_str.split()
+                    
+        if not depends_str:
             raise ValueError("No 'depends' file found in the archive.")
-        
-        return depends_str.split()
 
     def extract_make_depends(self, package: str) -> list[str]:
         depends_str : str = ""
@@ -49,9 +48,9 @@ class RepoManager:
                     f = tar.extractfile(member)
                     if f:
                         depends_str : str = f.read().decode().strip()
-                        break
+                        return depends_str.split()
+        return []
 
-        return depends_str.split()
         
         
     def extract_and_process_version(self, package: str, current_version: str) -> str:
