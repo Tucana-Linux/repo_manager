@@ -7,7 +7,7 @@ Precondition: Current directory is the repository directory
 import os
 import subprocess
 from typing import Any
-from .rebuild_repo import RepoManager
+from .RepoManager import RepoManager
 
 def main():
     repo = RepoManager(os.getcwd())
