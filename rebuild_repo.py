@@ -20,6 +20,8 @@ class RepoManager:
         os.chdir("packages/")
         for _, _, files in os.walk("."):
             for tar in files:
+                if ".git" == tar:
+                    continue
                 if os.path.getmtime(f"./{tar}") > last_repo_update:
                     needs_update.append(tar.removesuffix(".tar.xz"))
         os.chdir(self.repo_path)
