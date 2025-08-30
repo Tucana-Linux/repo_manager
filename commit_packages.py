@@ -16,6 +16,7 @@ def main():
     for package in packages_with_updates:
         current_version : str = ""
         if package in packages:
+            print(f"Updating {package}")
             current_version = packages[package]["version"]
         version : str = repo.extract_and_process_version(package, current_version)
         subprocess.run(f'git add {package}.tar.xz && git commit -m "Update {package} to {version}"', shell=True, cwd="packages")

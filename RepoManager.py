@@ -60,7 +60,7 @@ class RepoManager:
         # Extract version file
         with tarfile.open(f"packages/{package}.tar.xz", "r:xz") as tar:
             for member in tar.getmembers():
-                if os.path.basename(member.name) == "version":
+                if member.name == f"{package}/version":
                     f = tar.extractfile(member)
                     if f:
                         extracted_version = f.read().decode().strip()
